@@ -45,6 +45,14 @@ async function run() {
       res.send(result)
     })
 
+    // get single task for edit
+    app.get('/allTask/:id', async(req, res) => {
+      const query = req.params.id;
+      const id = { _id: new ObjectId(query) }
+      const result = await createTaskCollection.findOne(id);
+      res.send(result)
+    })
+
     // delete single task
     app.delete('/allTasks/:id', async(req, res) => {
       const query = req.params.id;
@@ -53,10 +61,31 @@ async function run() {
       res.send(result)
     })
 
+    // edit single task
+    app.patch('/allTasks/:id', async(req, res) => {
+      const query = req.body;
+      const id = req.params.id;
+      console.log(query, id);
+      const filter = { _id: new ObjectId(id) }
+
+      const updateDoc = {
+        $set: {
+          Title: query.Title,
+          Description: query.Description,
+          Deadlines: query.Deadlines,
+          Priority: query.Priority,
+        }
+      }
+
+      const result = await createTaskCollection.updateOne(filter, updateDoc)
+      res.send(result)
+    })
+    
+
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    // await client.db("admin").command({ ping: 1 });
+    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
